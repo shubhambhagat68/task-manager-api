@@ -1,18 +1,30 @@
-const express = require('express')
-const userRouter=require('./routers/user.js')
-const taskRouter=require('./routers/task.js')
-require('./db/mongoose.js')
+const cluster = require('cluster')
 
 
-const app = express()
-const port=process.env.PORT
+if(cluster.isMaster){
+	cluster.fork()
+	cluster.fork()
+	cluster.fork()
+	cluster.fork()
+}
+else{
+	const express = require('express')
+	const userRouter=require('./routers/user.js')
+	const taskRouter=require('./routers/task.js')
+	require('./db/mongoose.js')
 
 
-app.use(express.json())
-app.use(userRouter)
-app.use(taskRouter)
+	const app = express()
+	const port=process.env.PORT
 
 
-app.listen(port,()=>{
-	console.log("Server Running on port "+port)
-})
+	app.use(express.json())
+	app.use(userRouter)
+	app.use(taskRouter)
+
+
+	app.listen(port,()=>{
+		console.log("Server Running on port "+port)
+	})
+}
+
